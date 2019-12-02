@@ -1,0 +1,112 @@
+---
+title: Replication of "An instance theory of associative learning" (Jamieson et al.
+  2012)
+author: "Frederik Aust & Deniz Tuzsus"
+date: "18 October 2019"
+output:
+  html_document:
+    code_folding: hide
+    fig_caption: yes
+    theme: spacelab
+    toc: yes
+  pdf_document:
+    toc: yes
+---
+
+```{r}
+knitr::opts_chunk$set(cache = TRUE)
+```
+
+
+Minerva-AL is an instance models of associative learning. In the following the simulations of Jamieson et al. (2012) will be reproduced. The number of replications will be raised to 100, instead of 25 to get more robust simulations.
+
+**Following spots do not match the original numbers at all**
+
++ Reacquisition: All tables
++ Direct test for conditioned inhibition: first row, third row & whole second row
++ Summation test for conditioned inhibition: first row, second row
++ latent inhibition: whole table
+
+
+```{r}
+source("minerva-al.R")
+source("supplementary_functions.R")
+```
+
+# Acquisition & Extinction
+
+<!-- This associative learning protocol consists of two blocks. In the first, a cue "A" is presented, followed by an outcome "X" for trials 1-100. In the second, cue "A" is presented without the following outcome "X" for the trials 101-200. The figure shows negatively accelerated learning curves. The speed of Aquisition and Extinction is correlated with the learning rates. This figure replicates Jamiesons Figure 1.  -->
+
+```{r child = 'reproduce_jamieson_etal_2012.Rmd'}
+
+```
+
+<!-- ## Rapid Reacquisition -->
+
+<!-- Rapid reacquisition is the phenomenon, that a initially learned association is relearned faster, than a new association. This associative learning protocol consists of two conditions. In the reaquisition condition cue "A" is followed by outcome "X" for trials 1-50, for trials 51-100 cue "A" is presented without outcome "X". In the following test phase the mean number of trials to achieve a criterion of Retrieval of X|A > .95 is measured. In the control condition the protocol is the same, with the exception that in the following test phase the mean number of trials to achieve a criterion of Retriaval of X|B > .95 is measured.  The reacquisiton table shows less trials to achieve the criterion than the control table, with the exception of the last collumn, where learning rate = 1. -->
+
+<!-- ```{r child = 'rapid_reacquisition.Rmd'} -->
+
+<!-- ``` -->
+
+# Inhibtion
+
+Inhibition is observed, if after a learning phase a cue attenuates responding to an outcome. 
+
+## Direct test for conditioned inhibition
+
+This associative learning protocol consists of two phases. The training phase mixes even trials in which, cue "A" is followed by outcome "X" and odd trials in which, a cue compound "AB" is presented without "X". In the test phase retrieval of X|A and X|B is measured. As the simulation results shows, conditioned inhibition is observed. Retrieval of X|B is attenuated.    
+
+
+```{r child = 'direct_test_conditioned_inhibition.Rmd'}
+
+```
+
+## Summation test for condition inhibition
+
+This associative learning protocol consists of two phases. Phase 1 repeates the training phase of the direct test for inhibition protocol. In phase 2 a novel cue "C" is followed by "X". After, Retrieval of X|BC, X|CD or X|C is tested. As the tables show cue "B" is a conditioned inhibitor, because retrieval of x|B is the lowest. 
+
+
+```{r child='summation_test_conditioned_inhibition.Rmd'}
+
+```
+
+## Retardation test for conditioned inhibition
+
+This associative learning protocol consists of two conditions. In the experimental condition, a training phase consisting of intermixed trials (as in the prior protocols) are followed by a test phase, in which mean trials to achieve a criterion of X|BC > .95 is tested.In the control condition there is no training phase, at test mean trials to achive a criterion of X|C > .95 is tested. As the tables show, cue "B" is a conditioned inhibitor, learning is slower in the experimental condition than in the control condition.
+
+
+```{r child='retardation_test_conditioned_inhibition.Rmd'}
+
+```
+
+## External inhibition
+
+This associative learning protocol consists of two conditions. In the external inhibtion condition, a training phase consisting of intermixed trials (as in the prior protocols) are followed by a test phase, in which mean trials to achieve a criterion of X|AB > .95 is tested. In the control condition there is there is same training phase, but at test mean trials to achive a criterion of X|A > .95 is tested. As the tables show, cue "B" is a conditioned inhibitor, learning is slower in the external inhibition condition than in the control condition.
+
+```{r, child='external_inhibition.Rmd'}
+
+```
+
+## Latent inhibition
+
+This associative learning protocol consists of three conditions each with a pretraining phase, in which cue "A" is presented, and a test phase, where mean trials to achieve a criterion of X|A > .95 is measured. In the 0 pretrials condition, there is no pretraining, only the test phase. In the 10 and 30 pretrials conditions, there are 10 or 30 trials of pretraining, respectively. Latent inhition is observed when preexposure to cue "A" slows subsequent learning with it. As expected, the tables show that with higher number of pretrials Minerva AL needs more trials to achieve the criterion value.  
+
+
+```{r, child='latent_inhibition.Rmd'}
+
+```
+
+## Hall-Pearce negative transfer
+
+This associaive learning protocol repeats the protocol of latent inhibtion, with the exception that in the pretraining phase cue "A" is followed by a attenuated presentation of outcome "X". The Hall-Pearce negative transfer phenomenon is observed, when the number of trials needed to reach the criterion in this protocol is higher than in the latent inhibtion protocol. This is not clearly expressed by the simulations in this implementation of Minerva AL.
+
+
+```{r, child='hall_pearce_negative_transfer.Rmd', cache = FALSE}
+
+```
+
+# References
+
+Jamieson, R. K., Crump, M. J. C., & Hannah, S. D. (2012). An instance theory of associative learning. *Learning & Behavior*, 40(1), 61–82. doi:[10.3758/s13420-011-0046-2](http://dx.doi.org/10.3758/s13420-011-0046-2)
+

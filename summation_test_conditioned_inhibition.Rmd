@@ -1,0 +1,273 @@
+---
+title: "Summation test for conditioned inhibition"
+author: "Deniz Tuzsus"
+date: "12 November 2019"
+output: html_document
+---
+
+```{r}
+# setup constant variables over all simulations
+n_features <- 120
+cue_features <- 1:100
+a <- b  <- c <- d <- context <- outcome <- rep(0, n_features)
+
+# setup stimuli
+a[1:20] <- b [21:40] <- c[41:60] <- d[61:80] <- 1
+context[81:100] <- 1
+outcome[101:120] <- 1
+
+# number of replications
+n_replications <- 100
+
+# learning rates
+p_encode <- c(0.33, 0.67, 1)
+
+# specify models
+model = "Minerva AL"
+```
+
+```{r}
+# specify events
+training_ax_event <- a + context + outcome
+training_ab_event <- a + b + context
+training_cx_event <- c + context + outcome
+
+probe_a <- a + context
+probe_b <- b + context
+probe_ab <- a + b + context
+probe_bc <- b + c + context
+probe_cd <- c + d + context
+probe_c <- c + context
+
+# setup trial number
+n_trials <- 150
+
+# prepare results object as matrix[n_trials, n_replications]
+sim_results_xbc <- matrix(0, ncol = n_replications, nrow = length(p_encode))
+sim_results_xcd <- matrix(0, ncol = n_replications, nrow = length(p_encode))
+sim_results_xc <- matrix(0, ncol = n_replications, nrow = length(p_encode))
+# specify object for normalized echo for every trial as 3D array[p_encode, n_trials, n_replications]
+# with cells containing normalized echo vector 
+normalized_echos <- array(list(rep(NA, n_features)), dim = c(length(p_encode), n_trials, n_replications))
+```
+
+```{r}
+#--------------- execute simulations--------------#
+
+for (m in 1:length(model)){
+  for (r in 1:n_replications) {
+    for(i in 1:length(p_encode)) {
+      # Memory is empty on first trial
+      normalized_echo <- probe_memory(probe_ab, NULL, cue_features, model = model[m])
+      memory <- learn(
+        normalized_echo
+        , training_ab_event
+        , p_encode[i]
+        , NULL
+        , model = model[m]
+      )
+          normalized_echos[[i,1,r]] <- normalized_echo
+      
+       # A -> X trials on every even number
+      for(j in 2:100) {
+        if (j %% 2 == 0){
+          normalized_echo <- probe_memory(probe_a, memory, cue_features, model = model[m])
+          memory <- learn(
+            normalized_echo
+            , training_ax_event
+            , p_encode[i]
+            , memory
+            , model = model[m]
+          )
+          normalized_echos[[i,j,r]] <- normalized_echo
+        }
+        else {
+          # AB trials on every odd number
+          normalized_echo <- probe_memory(probe_ab, memory, cue_features, model = model[m])
+          memory <- learn(
+            normalized_echo
+            , training_ab_event
+            , p_encode[i]
+            , memory
+            , model = model[m]
+          )
+          normalized_echos[[i,j,r]] <- normalized_echo
+        }
+      }
+      # CX trials
+      for(j in 101:150) {
+        normalized_echo <- probe_memory(probe_c, memory, cue_features, model = model[m])
+        memory <- learn(
+          normalized_echo
+          , training_cx_event
+          , p_encode[i]
+          , memory
+          , model = model[m]
+        )
+        normalized_echos[[i,j,r]] <- normalized_echo
+      }
+      normalized_echo_bc <- probe_memory(probe_bc, memory, cue_features, model = model[m])
+      normalized_echo_cd <- probe_memory(probe_cd, memory, cue_features, model = model[m])
+      normalized_echo_c <- probe_memory(probe_c, memory, cue_features, model = model[m])
+      sim_results_xbc[i,r] <- expect_event(outcome = outcome, normalized_echo = normalized_echo_bc)
+      sim_results_xcd[i,r] <- expect_event(outcome = outcome, normalized_echo = normalized_echo_cd)
+      sim_results_xc[i,r] <- expect_event(outcome = outcome, normalized_echo = normalized_echo_c)
+    }
+  }
+}
+```
+
+```{r}
+res_mat <- matrix(NA, nrow = 3, ncol = 3)
+
+#compute means over replications
+x <- rowMeans(sim_results_xbc)
+#compute standard errors over replications
+y <- apply(sim_results_xbc, 1, FUN = std_err)
+
+for (i in 1:length(p_encode)){
+  res_mat[1,i] <- table_fun(x[i], y[i])
+}
+
+#compute means over replications
+x <- rowMeans(sim_results_xcd)
+#compute standard errors over replications
+y <- apply(sim_results_xcd, 1, FUN = std_err)
+
+for (i in 1:length(p_encode)){
+  res_mat[2,i] <- table_fun(x[i], y[i])
+}
+
+#compute means over replications
+x <- rowMeans(sim_results_xc)
+#compute standard errors over replications
+y <- apply(sim_results_xc, 1, FUN = std_err)
+
+for (i in 1:length(p_encode)){
+  res_mat[3,i] <- table_fun(x[i], y[i])
+}
+
+knitr::kable(cbind(Condition = c("X|BC", "X|CD", "X|C"), res_mat), col.names = c("Condition", round(p_encode, 2)))
+
+```
+
+
+```{r}
+#----- diagnostic plots ------#
+
+# par(mfrow=c(2,2))
+# 
+# # memory encoding of the outcome over the trials
+# plot(
+#   1:n_trials
+#   , memory[, 101]
+#   , type = "l"
+#   , col = scales::alpha("black", 0.3)
+#   , ylim = c(-2, 2)
+#   , xlab = "Trial"
+#   , ylab = "Feature encoding"
+#   , main = "Features of outcome X"
+#   , las = 1
+# )
+# for(i in 102:120) {
+#   lines(
+#     1:n_trials
+#     , memory[, i]
+#     , col = scales::alpha("black", 0.3)
+#   )
+# }
+# 
+# # memory encoding of cue A over the trials
+# plot(
+#   1:n_trials
+#   , memory[, 1]
+#   , type = "l"
+#   , col = scales::alpha("black", 0.3)
+#   , ylim = c(-2, 2)
+#   , xlab = "Trial"
+#   , ylab = "Feature encoding"
+#   , main = "Features of Cue A"
+#   , las = 1
+# )
+# for(i in 2:20) {
+#   lines(
+#     1:n_trials
+#     , memory[, i]
+#     , col = scales::alpha("black", 0.3)
+#   )
+# }
+# 
+# # memory encoding of cue B over the trials
+# plot(
+#   1:n_trials
+#   , memory[, 21]
+#   , type = "l"
+#   , col = scales::alpha("black", 0.3)
+#   , ylim = c(-2, 2)
+#   , xlab = "Trial"
+#   , ylab = "Feature encoding"
+#   , main = "Features of Cue B"
+#   , las = 1
+# )
+# for(i in 21:40) {
+#   lines(
+#     1:n_trials
+#     , memory[, i]
+#     , col = scales::alpha("black", 0.3)
+#   )
+# }
+# 
+# # memory encoding of cue C over the trials
+# plot(
+#   1:n_trials
+#   , memory[, 41]
+#   , type = "l"
+#   , col = scales::alpha("black", 0.3)
+#   , ylim = c(-2, 2)
+#   , xlab = "Trial"
+#   , ylab = "Feature encoding"
+#   , main = "Features of Cue C"
+#   , las = 1
+# )
+# for(i in 41:60) {
+#   lines(
+#     1:n_trials
+#     , memory[, i]
+#     , col = scales::alpha("black", 0.3)
+#   )
+# }
+```
+
+```{r}
+# normalized echos over the trials
+
+# libraries:
+# library(ggplot2)
+# library(gganimate)
+# 
+# 
+# echos <- vector()
+# for (i in 1:n_trials){
+#   echos <- c(echos,normalized_echos[[3,i,1]])
+# }
+# 
+# data <- data.frame(Stimuli = c(1:n_features), Echo = echos, frame = rep(1:n_trials, each = n_features))
+# 
+# 
+# # Make an animated boxplot
+# p <- ggplot(data, aes(x=Stimuli, y=Echo, fill=Stimuli)) + 
+#   geom_bar(stat='identity') +
+#   theme_bw() +
+#   # gganimate specific bits:
+#   transition_states(
+#     states = frame,
+#     transition_length = 1,
+#     state_length = 1, 
+#     wrap = TRUE
+#   ) 
+# 
+# p <- p + ggtitle('Now showing Trial:{closest_state}')
+# animate(p, nframes = 2*n_trials)
+```
+
+
