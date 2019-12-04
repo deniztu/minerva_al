@@ -10,7 +10,7 @@ output:
     toc_float: yes
 ---
 
-To validate this implementation of Minerva-AL, I reproduced a simulation study reported in Jamieson, Crump & Hannah (2012).
+<!-- To validate this implementation of Minerva-AL, I reproduced a simulation study reported in Jamieson, Crump & Hannah (2012). -->
 
 ```{r echo = FALSE, message = FALSE}
 library("dplyr")
@@ -26,9 +26,9 @@ source("minerva-al.R")
 
 <br />
 
-# Simulation of acquisition and extinction (Section 1)
+## Acquisition and extinction
 
-I created cue, outcome and context vectors and defined the number of trials and replications according to the specifications in the paper.
+We created cue, outcome, and context vectors and defined the number of trials and replications according to the specifications in the paper.
 
 ```{r setup-events}
 n_features <- 120
@@ -98,9 +98,9 @@ sim_results <- sim_results / n_replications # Mean of replications
 
 <br />
 
-## Results
+<!-- ## Results -->
 
-The resulting expectancies correspond nicely to those reported by Jamieson, Hannah & Crump (2012) in Figure 1.
+The results correspond nicely to those reported in Figure 1.
 
 ```{r plot-acquisition, fig.height = 5.5, fig.width = 9.5, echo = FALSE}
 plot(
@@ -129,7 +129,7 @@ matpoints(
 )
 ```
 
-As a comparison, the following plot shows the results from the reference implementation I received from Randall Jamieson (thanks!).
+For comparison, the following plot shows the results from the reference Fortran implementation we received from Randall Jamieson (thanks!).
 
 ```{r}
 acquisition_files <- list.files(path = "reference_implementation/results", pattern = "Acquisition", full.names = TRUE)
@@ -179,7 +179,7 @@ matpoints(
 )
 ```
 
-```{r}
+```{r eval = FALSE}
 prediction_differences <- sim_results - as.matrix(acquisition_extinction[, -1])
 
 plot(
@@ -247,7 +247,7 @@ summary(as.vector(prediction_differences))
 ```
 
 
-# Simulation of reacquisition (Section 1)
+## Rapid reacquisition
 
 ```{r}
 b <- rep(0, n_features)
@@ -261,7 +261,6 @@ control_probe <- b + context
 n_replications <- 100
 n_trials <- 200
 ```
-
 
 ```{r simulate-reacquisition}
 reacquisition_sim_results <- control_sim_results <- matrix(NA, ncol = n_trials, nrow = length(p_encode) * n_replications)
@@ -338,7 +337,11 @@ for (i in 1:length(p_encode)) {
 }
 ```
 
-## Results
+<!-- ## Results -->
+
+For this simulation, we used the same post-extinction memory for the reacquisition and control condition to reduce differences due to random variation during the initial acquisition and extinction trials.
+The following figure visualizes the changes to the retrieval of X given the cue during the third (re-)acquisition phase.
+The dashed lines represent the control condition, the solid lines the reacquisition condition.
 
 ```{r fig.height = 5.5, fig.width = 9.5, echo = FALSE}
 plot(
@@ -372,10 +375,30 @@ for(i in 1:length(p_encode)) {
   )
 }
 
-knitr::kable(cbind(Condition = c("Reacquisition", "Control"), reacquisition_results), col.names = c("Condtion", round(p_encode, 2)))
+knitr::kable(
+  cbind(Condition = c("Reacquisition", "Control"), reacquisition_results)
+  , col.names = c("Condtion", round(p_encode, 2))
+  , caption = "Reproduction of Table 1"
+)
 ```
 
-As a comparison, the following plot shows the results from the reference implementation I received from Randall Jamieson (thanks!).
+Our results diverge quite a bit from those originally reported whenever the learning rate is not perfect.
+
+```{r}
+original <- matrix(
+  c("36.2 (5.9)", "62.2 (7.4)", "19.7 (5.1)", "32.1 (6.4)", "5.1 (0.2)", "3.8 (0.1)")
+  , ncol = 3
+)
+knitr::kable(
+  cbind(Condition = c("Reacquisition", "Control"), original)
+  , col.names = c("Condtion", round(p_encode, 2))
+  , caption = "Table 1 as reported by Jamieson et al. (2012)"
+)
+```
+
+For comparison, we also implemented the reacquisition protocol in Fortran, based on the reference implementation for the simulation of acqusition and extinction.
+In this simulation we used different post-extinction memories.
+The results correspond closely to the results from our previous reproduction efforts.
 
 ```{r}
 reacquisition_files <- list.files(path = "reference_implementation/results", pattern = "Reacquisition\\_\\d+", full.names = TRUE)
@@ -471,12 +494,13 @@ knitr::kable(
   bind_rows(Reacquition = reacquisition_trial_counts, Control = reacquisition_control_trial_counts, .id = "Condition") %>%
     spread(L, n_trials) %>% 
     arrange(desc(Condition))
+  , caption = "Reproduction of Table 1 based on Fortran implementation"
 )
 ```
 
-The following plot compares initial and reacquisition.
+<!-- The following plot compares initial and reacquisition. -->
 
-```{r}
+```{r eval = FALSE}
 plot(
   1:50
   , rep(0, 50)
@@ -499,9 +523,9 @@ for(i in 1:length(p_encode)) {
 }
 ```
 
-And the same for the reference implementation.
+<!-- And the same for the reference implementation. -->
 
-```{r}
+```{r eval = FALSE}
 plot(
   1:50
   , rep(NA, 50)
