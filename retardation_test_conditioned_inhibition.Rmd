@@ -140,7 +140,7 @@ for (i in 1:length(p_encode)){
 
 
 ```{r, cache=TRUE}
-# -------------------- Diagnostic Plots --------------------------------------#
+# -------------------- Diagnostic Plots ------------------------------------#
 
 # par(mfrow = c(2,2))
 # 
@@ -337,9 +337,17 @@ for (i in 1:length(p_encode)){
   res_mat[2,i] <- table_fun(x[i], y[i])
 }
 
-knitr::kable(cbind(Condition = c("Experimental", "Control"), res_mat), col.names = c("Condition", round(p_encode, 2)))
+#Reproduction of Table 4
+knitr::kable(cbind(Condition = c("Experimental", "Control"), res_mat), col.names = c("Condition", round(p_encode, 2)), caption = "Reproduction of Table 4")
 ```
 
+```{r}
+#Table 4 as reported by Jamieson et al. (2012)
+data <- c("46.6 (3.7)","16.3 (0.9)","5.6 (0.7)","29.4 (1.5)","13.2 (1.0)","4.2 (0.2)")
+res_mat2 <- matrix(data = data, nrow = 2, ncol = 3, byrow = TRUE)
+
+knitr::kable(cbind(Condition = c("Experimental", "Control"), res_mat2), col.names = c("Condition", round(p_encode, 2)), caption = "Table 4 as reported by Jamieson et al. (2012)")
+```
 
 ```{r, cache=TRUE}
 # -------------------- Diagnostic Plots --------------------------------------#

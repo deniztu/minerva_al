@@ -412,8 +412,8 @@ for (i in 1:length(p_encode)){
   res_mat[3,i] <- table_fun(x[i], y[i])
 }
 
+# Reproduction of Table 6
 knitr::kable(cbind(Condition = c("0 Pretrials", "10 Pretrials", "30 Pretrials"), res_mat), col.names = c("Condition", round(p_encode, 2)))
-
 ```
 
 ```{r, cache=TRUE}

@@ -18,17 +18,18 @@ knitr::opts_chunk$set(cache = TRUE)
 ```
 
 
-Minerva-AL is an instance models of associative learning.
+Minerva-AL is an instance model of associative learning.
 In the following we attempted to reproduce a subset (sections 1 and 2) of the simulations reported by Jamieson et al. (2012).
 We repeated every simulation 100 times, rather than 25 times as in the original report, to reduce random noise in our results.
 
 **For the following effects our simulations yielded results that diverge from the originally reported results.**
 
 + Section 1
-    + Reacquisition: All tables
+    + Reacquisition: All, except the case where learning rate = 1
 + Section 2
-    + Direct test for conditioned inhibition: first row, third row & whole second row
-    + Summation test for conditioned inhibition: first row, second row
+    + Direct test for conditioned inhibition: first row, third column & whole second row
+    + Summation test for conditioned inhibition: first row, third column
+    + Retardation test for conditioned inhibition: whole table
     + Latent inhibition: whole table
 
 
@@ -51,7 +52,7 @@ source("supplementary_functions.R")
 <!-- ```{r child = 'rapid_reacquisition.Rmd'} -->
 <!-- ``` -->
 
-# Section 2: Inhibtion
+# Section 2: Inhibition
 
 Inhibition is observed, if after a learning phase a cue attenuates responding to an outcome. 
 
@@ -81,7 +82,7 @@ This associative learning protocol consists of two conditions. In the experiment
 
 ## External inhibition
 
-This associative learning protocol consists of two conditions. In the external inhibtion condition, a training phase consisting of intermixed trials (as in the prior protocols) are followed by a test phase, in which mean trials to achieve a criterion of X|AB > .95 is tested. In the control condition there is there is same training phase, but at test mean trials to achive a criterion of X|A > .95 is tested. As the tables show, cue "B" is a conditioned inhibitor, learning is slower in the external inhibition condition than in the control condition.
+This associative learning protocol consists of two conditions. In the external Inhibition condition, a training phase consisting of intermixed trials (as in the prior protocols) are followed by a test phase, in which mean trials to achieve a criterion of X|AB > .95 is tested. In the control condition there is there is same training phase, but at test mean trials to achive a criterion of X|A > .95 is tested. As the tables show, cue "B" is a conditioned inhibitor, learning is slower in the external inhibition condition than in the control condition.
 
 ```{r, child='external_inhibition.Rmd'}
 ```
@@ -96,7 +97,7 @@ This associative learning protocol consists of three conditions each with a pret
 
 ## Hall-Pearce negative transfer
 
-This associaive learning protocol repeats the protocol of latent inhibtion, with the exception that in the pretraining phase cue "A" is followed by a attenuated presentation of outcome "X". The Hall-Pearce negative transfer phenomenon is observed, when the number of trials needed to reach the criterion in this protocol is higher than in the latent inhibtion protocol. This is not clearly expressed by the simulations in this implementation of Minerva AL.
+This associaive learning protocol repeats the protocol of latent Inhibition, with the exception that in the pretraining phase cue "A" is followed by a attenuated presentation of outcome "X". The Hall-Pearce negative transfer phenomenon is observed, when the number of trials needed to reach the criterion in this protocol is higher than in the latent Inhibition protocol. This is not clearly expressed by the simulations in this implementation of Minerva AL.
 
 
 ```{r, child='hall_pearce_negative_transfer.Rmd', cache = FALSE}

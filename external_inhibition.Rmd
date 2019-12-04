@@ -255,8 +255,17 @@ for (i in 1:length(p_encode)){
   res_mat[2,i] <- table_fun(x[i], y[i])
 }
 
-knitr::kable(cbind(Condition = c("External Inhibition", "Control"), res_mat), col.names = c("Condition", round(p_encode, 2)))
+knitr::kable(cbind(Condition = c("External Inhibition", "Control"), res_mat), col.names = c("Condition", round(p_encode, 2)), caption = "Reproduction of Table 5")
 ```
+
+```{r}
+#Table 5 as reported by Jamieson et al. (2012)
+data <- c("0.80 (.02)","0.85 (.02)","0.90 (.02)","0.98 (.00)","0.99 (.00)","1.0 (.00)")
+res_mat2 <- matrix(data = data, nrow = 2, ncol = 3, byrow = TRUE)
+
+knitr::kable(cbind(Condition = c("External Inhibition", "Control"), res_mat2), col.names = c("Condition", round(p_encode, 2)), caption = "Table 5 as reported by Jamieson et al. (2012)")
+```
+
 
 ```{r}
 #----- diagnostic plots ------#

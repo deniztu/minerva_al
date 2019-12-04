@@ -138,8 +138,18 @@ for (i in 1:length(p_encode)){
   res_mat[2,i] <- table_fun(x[i], y[i])
 }
 
-knitr::kable(cbind(Condition = c("X|A", "X|B"), res_mat), col.names = c("Condition", round(p_encode, 2)))
+#Reproduction of Table 2
+knitr::kable(cbind(Condition = c("X|A", "X|B"), res_mat), col.names = c("Condition", round(p_encode, 2)), caption = "Reproduction of Table 2")
 ```
+
+```{r}
+#Table 2 as reported by Jamieson et al. (2012)
+data <- c("0.93 (0.2)","0.97 (.01)","0.99 (.01)","-0.16 (.01)","-0.21 (.02)","-0.32 (.04)")
+res_mat2 <- matrix(data = data, nrow = 2, ncol = 3, byrow = TRUE)
+
+knitr::kable(cbind(Condition = c("X|A", "X|B"), res_mat2), col.names = c("Condition", round(p_encode, 2)), caption = "Table 2 as reported by Jamieson et al. (2012)")
+```
+
 
 ```{r}
 #----- diagnostic plots ------#

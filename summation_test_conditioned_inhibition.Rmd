@@ -147,7 +147,15 @@ for (i in 1:length(p_encode)){
   res_mat[3,i] <- table_fun(x[i], y[i])
 }
 
-knitr::kable(cbind(Condition = c("X|BC", "X|CD", "X|C"), res_mat), col.names = c("Condition", round(p_encode, 2)))
+#Reproduction of Table 3
+knitr::kable(cbind(Condition = c("Summation", "Control (1)", "Control (2)"), res_mat), col.names = c("Condition", round(p_encode, 2)), caption = "Reproduction of Table 3")
+
+#Table 3 as reported by Jamieson et al. (2012)
+data <- c("0.13 (.02)","0.18 (.02)","0.05 (.07)","0.93 (.01)","0.92 (.01)","0.89 (.02)", "0.99 (.00)", "0.99 (.00)", "1.0 (.00)")
+res_mat2 <- matrix(data = data, nrow = 3, ncol = 3, byrow = TRUE)
+
+knitr::kable(cbind(Condition = c("Summation", "Control (1)", "Control (2)"), res_mat2), col.names = c("Condition", round(p_encode, 2)), caption = "Table 3 as reported by Jamieson et al. (2012)")
+
 
 ```
 
